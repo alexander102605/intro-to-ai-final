@@ -1,5 +1,4 @@
 import pygame
-from random import randint
 pygame.init()
 
 WHITE = (255,255,255)
@@ -39,7 +38,7 @@ class Ball(pygame.sprite.Sprite):
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
         pygame.draw.rect(self.image, color, [0, 0, width, height])
-        self.velocity = [randint(4,8),randint(-8,8)]
+        self.velocity = [6, -6]
         self.rect = self.image.get_rect()
         
     def update(self):
@@ -77,7 +76,7 @@ paddle.rect.y = 560
 #Ball
 ball = Ball(WHITE,10,10)
 ball.rect.x = 345
-ball.rect.y = 195
+ball.rect.y = 400
 
 
 all_bricks = pygame.sprite.Group()
@@ -109,7 +108,6 @@ clock = pygame.time.Clock()
 
 #Main Program Loop 
 while carryOn:
-
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
               carryOn = False
@@ -123,6 +121,13 @@ while carryOn:
         paddle.moveRight(PADDLE_SPEED)
 
     all_sprites_list.update()
+    
+    magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
+    #change this variable to get it less often
+    if ball.rect.y < 1000:
+        print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
+        print(f"Magnitude: {magnitude:.2f}", flush=True)
+        print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}]", flush=True)
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.x<=0:
@@ -144,6 +149,7 @@ while carryOn:
     if pygame.sprite.collide_rect(ball, paddle):
         ball.rect.bottom = paddle.rect.top
         ball.bounce()
+        print(f"Paddle position: ({paddle.rect.x})", flush=True)
 
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
