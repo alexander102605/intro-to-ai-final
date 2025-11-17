@@ -2,7 +2,6 @@ import pygame
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import recall_score, f1_score, accuracy_score
 import pandas as pd
-#model definition
 
 df = pd.read_csv("./training.csv")
 
