@@ -59,9 +59,6 @@ class Brick(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, color, [0, 0, width, height])
         self.rect = self.image.get_rect()
 
-
-
-
 size = (800, 600)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Breakout Game")
@@ -124,7 +121,7 @@ while carryOn:
     
     magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
     #change this variable to get it less often
-    if ball.rect.y < 1000:
+    if ball.rect.y > 350:
         print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
         print(f"Magnitude: {magnitude:.2f}", flush=True)
         print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}]", flush=True)
@@ -141,7 +138,7 @@ while carryOn:
             screen.blit(text, (250,300))
             pygame.display.flip()
             pygame.time.wait(3000)
-            carryOn=False
+            
 
     if ball.rect.y<40:
         ball.velocity[1] = -ball.velocity[1]
