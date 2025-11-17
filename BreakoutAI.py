@@ -1,4 +1,10 @@
 import pygame
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import recall_score, f1_score, accuracy_score
+#model definition
+
+
+
 pygame.init()
 
 WHITE = (255,255,255)
@@ -125,6 +131,7 @@ while carryOn:
         print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
         print(f"Magnitude: {magnitude:.2f}", flush=True)
         print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}]", flush=True)
+        #model.predict(nyaa)
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.x<=0:
