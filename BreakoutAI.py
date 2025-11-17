@@ -1,9 +1,19 @@
 import pygame
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import recall_score, f1_score, accuracy_score
+import pandas as pd
 #model definition
 
+df = pd.read_csv("./training.csv")
 
+mlr = LinearRegression()
+x_train = df[["ballX","ballY","velocity"]]
+y_train = df["paddleX"]
+mlr.fit(x_train, y_train)
+
+ballXTrain = 0
+ballYTrain = 0
+velocityTrain=0
 
 pygame.init()
 
@@ -16,7 +26,7 @@ YELLOW = (255,255,0)
 BLACK = (0,0,0)
 
 score = 0
-lives = 1
+lives = 5
 
 
 class Paddle(pygame.sprite.Sprite):
@@ -108,6 +118,8 @@ all_sprites_list.add(ball)
 
 carryOn = True
 clock = pygame.time.Clock()
+train_data = {}
+train_df = pd.DataFrame()
 
 #Main Program Loop 
 while carryOn:
@@ -126,11 +138,22 @@ while carryOn:
     all_sprites_list.update()
     
     magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
+
     #change this variable to get it less often
-    if ball.rect.y > 350:
-        print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
-        print(f"Magnitude: {magnitude:.2f}", flush=True)
-        print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}]", flush=True)
+    if ball.rect.y > 400 and ball.rect.y < 410 and ball.velocity[1] > 0:
+
+        ballXTrain = ball.rect.x
+        ballYTrain = ball.rect.y
+        velocityTrain = ball.velocity[0]
+
+        # print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
+        # print(f"Magnitude: {magnitude:.2f}", flush=True)
+        # print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}] \n\n", flush=True)
+
+
+        yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0]]])
+
+        paddle.rect.x = yhat
         #model.predict(nyaa)
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
@@ -145,7 +168,8 @@ while carryOn:
             screen.blit(text, (250,300))
             pygame.display.flip()
             pygame.time.wait(3000)
-            
+
+            carryOn=False
 
     if ball.rect.y<40:
         ball.velocity[1] = -ball.velocity[1]
@@ -153,6 +177,10 @@ while carryOn:
     if pygame.sprite.collide_rect(ball, paddle):
         ball.rect.bottom = paddle.rect.top
         ball.bounce()
+
+        train_data = {"ballX": [ballXTrain], "ballY": [ballYTrain], "velocity": [velocityTrain], "paddleX": [paddle.rect.x]}
+        train_df = pd.DataFrame(train_data)
+        train_df.to_csv("training.csv", mode='a', header=False, index=False)
         print(f"Paddle position: ({paddle.rect.x})", flush=True)
 
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
@@ -182,4 +210,6 @@ while carryOn:
     all_sprites_list.draw(screen)
     pygame.display.flip()
     clock.tick(60)
+
+
 pygame.quit()
