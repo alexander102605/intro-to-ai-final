@@ -17,7 +17,6 @@ mlr.fit(x_train, y_train)
 ballXTrain = 0
 ballYTrain = 0
 velocityTrain=0
-magnitude = 0
 
 pygame.init()
 
@@ -199,7 +198,7 @@ while carryOn:
         ball.rect.bottom = paddle.rect.top
         ball.bounce()
 
-        train_data = {"ballX": [ballXTrain], "ballY": [ballYTrain], "velocity": [velocityTrain], "magnitude": [round(magnitude,2)], "paddleX": [paddle.rect.x]}
+        train_data = {"ballX": [ballXTrain], "ballY": [ballYTrain], "velocity": [velocityTrain], "paddleX": [paddle.rect.x]}
         train_df = pd.DataFrame(train_data)
         train_df.to_csv("training.csv", mode='a', header=False, index=False)
         print(f"Paddle position: ({paddle.rect.x})", flush=True)
