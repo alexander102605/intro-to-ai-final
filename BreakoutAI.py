@@ -6,14 +6,17 @@ import pandas as pd
 
 df = pd.read_csv("./training.csv")
 
+
 mlr = LinearRegression()
 x_train = df[["ballX","ballY","velocity"]]
 y_train = df["paddleX"]
 mlr.fit(x_train, y_train)
 
+
 ballXTrain = 0
 ballYTrain = 0
 velocityTrain=0
+magnitude = 0
 
 pygame.init()
 
@@ -56,6 +59,7 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, color, [0, 0, width, height])
         self.velocity = [randint(2,8),randint(2,8)]
         #yes i use print statements for debugging
+            # what is wrong with you ??????????????? (i do the same thing)
         #print(f"Initial velocity: {self.velocity}", flush=True)
         self.rect = self.image.get_rect()
         
@@ -139,24 +143,25 @@ while carryOn:
 
     all_sprites_list.update()
     
-    magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
+    
 
     #change this variable to get it less often
+        # nuh
     if ball.rect.y > 400 and ball.rect.y < 410 and ball.velocity[1] > 0:
 
         ballXTrain = ball.rect.x
         ballYTrain = ball.rect.y
         velocityTrain = ball.velocity[0]
-
+        magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
         # print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
         # print(f"Magnitude: {magnitude:.2f}", flush=True)
         # print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}] \n\n", flush=True)
 
-
+        # code of instant pain and suffering
         yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0]]])
 
         paddle.rect.x = yhat
-        model.predict(nyaa)
+        # model.predict(nyaa)
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.x<=0:
@@ -190,6 +195,7 @@ while carryOn:
       ball.bounce()
       score += 1
       brick.kill()
+      # NOOOOOOOOOO DONT KILL HIM WHAT DID BRICK DO TO YOUUUUUU
       if len(all_bricks)==0:
             font = pygame.font.Font(None, 74)
             text = font.render("LEVEL COMPLETE", 1, WHITE)
