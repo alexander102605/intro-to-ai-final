@@ -3,6 +3,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import recall_score, f1_score, accuracy_score
 from random import randint
 import pandas as pd
+import math
 
 df = pd.read_csv("./training.csv")
 
@@ -57,7 +58,10 @@ class Ball(pygame.sprite.Sprite):
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
         pygame.draw.rect(self.image, color, [0, 0, width, height])
-        self.velocity = [randint(2,8),randint(2,8)]
+        if randint(0,1) == 0:
+            self.velocity = [-6,6]
+        else:
+            self.velocity = [6,6]
         #yes i use print statements for debugging
             # what is wrong with you ??????????????? (i do the same thing)
         #print(f"Initial velocity: {self.velocity}", flush=True)
@@ -99,24 +103,31 @@ ball.rect.y = 400
 
 
 all_bricks = pygame.sprite.Group()
-for i in range(7):
-    brick = Brick(RED,80,30)
-    brick.rect.x = 60 + i* 100
+for i in range(8):
+    brick = Brick(RED,92,30)
+    brick.rect.x = 5 + i* 100
     brick.rect.y = 60
     all_sprites_list.add(brick)
     all_bricks.add(brick)
-for i in range(7):
-    brick = Brick(ORANGE,80,30)
-    brick.rect.x = 60 + i* 100
+for i in range(8):
+    brick = Brick(ORANGE,92,30)
+    brick.rect.x = 5 + i* 100
     brick.rect.y = 100
     all_sprites_list.add(brick)
     all_bricks.add(brick)
-for i in range(7):
-    brick = Brick(YELLOW,80,30)
-    brick.rect.x = 60 + i* 100
+for i in range(8):
+    brick = Brick(YELLOW,92,30)
+    brick.rect.x = 5 + i* 100
     brick.rect.y = 140
     all_sprites_list.add(brick)
     all_bricks.add(brick)
+for i in range(8):
+    brick = Brick(WHITE,92,30)
+    brick.rect.x = 5 + i* 100
+    brick.rect.y = 180
+    all_sprites_list.add(brick)
+    all_bricks.add(brick)
+
 
 
 all_sprites_list.add(paddle)
@@ -153,6 +164,8 @@ while carryOn:
         ballYTrain = ball.rect.y
         velocityTrain = ball.velocity[0]
         magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
+        angle = math.degrees(math.atan2(ball.velocity[1], ball.velocity[0]))
+        print(f"Ball angle: {angle:.2f}°", flush=True)
         # print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
         # print(f"Magnitude: {magnitude:.2f}", flush=True)
         # print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}] \n\n", flush=True)
@@ -161,6 +174,7 @@ while carryOn:
         yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0]]])
 
         paddle.rect.x = yhat
+        # model.predict(nyaa)
         # model.predict(nyaa)
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
