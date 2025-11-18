@@ -165,13 +165,9 @@ while carryOn:
         velocityTrain = ball.velocity[0]
         magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
         angle = math.degrees(math.atan2(ball.velocity[1], ball.velocity[0]))
-        print(f"Ball angle: {angle:.2f}°", flush=True)
-        # print(f"Ball position: ({ball.rect.x}, {ball.rect.y})", flush=True)
-        # print(f"Magnitude: {magnitude:.2f}", flush=True)
-        # print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}] \n\n", flush=True)
+        # print(f"Ball angle: {angle:.2f}°", flush=True)
 
         # code of instant pain and suffering
-        # yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0], angle]])
         yhat = rfr.predict([[ballXTrain, ballYTrain, velocityTrain, angle]])
 
         paddle.rect.x = yhat[0]
