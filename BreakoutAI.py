@@ -1,6 +1,7 @@
 import pygame
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import recall_score, f1_score, accuracy_score
+from random import randint
 import pandas as pd
 
 df = pd.read_csv("./training.csv")
@@ -53,7 +54,9 @@ class Ball(pygame.sprite.Sprite):
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
         pygame.draw.rect(self.image, color, [0, 0, width, height])
-        self.velocity = [6, -6]
+        self.velocity = [randint(2,8),randint(2,8)]
+        #yes i use print statements for debugging
+        #print(f"Initial velocity: {self.velocity}", flush=True)
         self.rect = self.image.get_rect()
         
     def update(self):
@@ -153,7 +156,7 @@ while carryOn:
         yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0]]])
 
         paddle.rect.x = yhat
-        #model.predict(nyaa)
+        model.predict(nyaa)
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.x<=0:
