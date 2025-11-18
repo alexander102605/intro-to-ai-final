@@ -9,4 +9,4 @@ def train(n = 1, fileName = "BreakoutAI.py"):
        subprocess.run(f"py ./{fileName}", cwd=path)
 
 
-train(n=100)
+train(n=10)

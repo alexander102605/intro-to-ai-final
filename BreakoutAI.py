@@ -1,5 +1,6 @@
 import pygame
 from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import recall_score, f1_score, accuracy_score
 from random import randint
 import pandas as pd
@@ -8,15 +9,16 @@ import math
 df = pd.read_csv("./training.csv")
 
 
-mlr = LinearRegression()
-x_train = df[["ballX","ballY","velocity"]]
+x_train = df[["ballX","ballY","velocity", "angle"]]
 y_train = df["paddleX"]
-mlr.fit(x_train, y_train)
-
+rfr = RandomForestRegressor()
+rfr.fit(x_train, y_train)
+# i love random forest regression <3<3,3<3<3<3<3
 
 ballXTrain = 0
 ballYTrain = 0
 velocityTrain=0
+angle=0
 
 pygame.init()
 
@@ -153,7 +155,6 @@ while carryOn:
 
     all_sprites_list.update()
     
-    
 
     #change this variable to get it less often
         # nuh
@@ -170,9 +171,11 @@ while carryOn:
         # print(f"Velocity vector: [{ball.velocity[0]}, {ball.velocity[1]}] \n\n", flush=True)
 
         # code of instant pain and suffering
-        yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0]]])
+        # yhat = mlr.predict([[ball.rect.x, ball.rect.y, ball.velocity[0], angle]])
+        yhat = rfr.predict([[ballXTrain, ballYTrain, velocityTrain, angle]])
 
-        paddle.rect.x = yhat
+        paddle.rect.x = yhat[0]
+        # model.predict(nyaa)
         # model.predict(nyaa)
         # model.predict(nyaa)
     if ball.rect.x>=790:
@@ -187,8 +190,6 @@ while carryOn:
             text = font.render("GAME OVER", 1, WHITE)
             screen.blit(text, (250,300))
             pygame.display.flip()
-            pygame.time.wait(3000)
-
             carryOn=False
 
     if ball.rect.y<40:
@@ -198,7 +199,7 @@ while carryOn:
         ball.rect.bottom = paddle.rect.top
         ball.bounce()
 
-        train_data = {"ballX": [ballXTrain], "ballY": [ballYTrain], "velocity": [velocityTrain], "paddleX": [paddle.rect.x]}
+        train_data = {"ballX": [ballXTrain], "ballY": [ballYTrain], "velocity": [velocityTrain], "angle": [angle], "paddleX": [paddle.rect.x]}
         train_df = pd.DataFrame(train_data)
         train_df.to_csv("training.csv", mode='a', header=False, index=False)
         print(f"Paddle position: ({paddle.rect.x})", flush=True)
