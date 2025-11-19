@@ -9,14 +9,13 @@ import math
 df = pd.read_csv("./training.csv")
 
 
-x_train = df[["ballX","ballY","velocity", "angle"]]
+x_train = df[["ballX","velocity", "angle"]]
 y_train = df["paddleX"]
 rfr = RandomForestRegressor()
 rfr.fit(x_train, y_train)
 # i love random forest regression <3<3,3<3<3<3<3
 
 ballXTrain = 0
-ballYTrain = 0
 velocityTrain=0
 angle=0
 
@@ -99,7 +98,7 @@ paddle.rect.y = 560
 
 #Ball
 ball = Ball(WHITE,10,10)
-ball.rect.x = 345
+ball.rect.x = randint(50,250)
 ball.rect.y = 400
 
 
@@ -158,17 +157,16 @@ while carryOn:
 
     #change this variable to get it less often
         # nuh
-    if ball.rect.y > 400 and ball.rect.y < 410 and ball.velocity[1] > 0:
+    if ball.rect.y > 390 and ball.rect.y < 400 and ball.velocity[1] > 0:
 
         ballXTrain = ball.rect.x
-        ballYTrain = ball.rect.y
         velocityTrain = ball.velocity[0]
         magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
         angle = math.degrees(math.atan2(ball.velocity[1], ball.velocity[0]))
         # print(f"Ball angle: {angle:.2f}°", flush=True)
 
         # code of instant pain and suffering
-        yhat = rfr.predict([[ballXTrain, ballYTrain, velocityTrain, angle]])
+        yhat = rfr.predict([[ball.rect.x, ball.velocity[0], angle]])
 
         paddle.rect.x = yhat[0]
         # model.predict(nyaa)
@@ -195,7 +193,7 @@ while carryOn:
         ball.rect.bottom = paddle.rect.top
         ball.bounce()
 
-        train_data = {"ballX": [ballXTrain], "ballY": [ballYTrain], "velocity": [velocityTrain], "angle": [angle], "paddleX": [paddle.rect.x]}
+        train_data = {"ballX": [ballXTrain], "velocity": [velocityTrain], "angle": [angle], "paddleX": [paddle.rect.x]}
         train_df = pd.DataFrame(train_data)
         train_df.to_csv("training.csv", mode='a', header=False, index=False)
         print(f"Paddle position: ({paddle.rect.x})", flush=True)
