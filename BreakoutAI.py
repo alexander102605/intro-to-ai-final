@@ -5,14 +5,23 @@ from sklearn.metrics import recall_score, f1_score, accuracy_score
 from random import randint
 import pandas as pd
 import math
-
+import warnings
+import time
+import numpy as np
+import copy
+warnings.filterwarnings('ignore', category=UserWarning)
 df = pd.read_csv("./training.csv")
 
 
-x_train = df[["ballX","velocity", "angle"]]
+x_train = df[["ballX","velocityX", "velocityY", "angle"]]
 y_train = df["paddleX"]
-rfr = RandomForestRegressor()
-rfr.fit(x_train, y_train)
+# rfr = RandomForestRegressor(criterion="absolute_error", max_depth=30, n_estimators=100)
+# rfr.fit(x_train, y_train)
+
+
+
+mlr = LinearRegression()
+mlr.fit(x_train, y_train)
 # i love random forest regression <3<3,3<3<3<3<3
 
 ballXTrain = 0
@@ -98,8 +107,8 @@ paddle.rect.y = 560
 
 #Ball
 ball = Ball(WHITE,10,10)
-ball.rect.x = randint(50,250)
-ball.rect.y = 400
+ball.rect.x = 400
+ball.rect.y = 300
 
 
 all_bricks = pygame.sprite.Group()
@@ -135,15 +144,13 @@ all_sprites_list.add(ball)
 
 carryOn = True
 clock = pygame.time.Clock()
-train_data = {}
-train_df = pd.DataFrame()
 
 #Main Program Loop 
 while carryOn:
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
               carryOn = False
-
+    
     PADDLE_SPEED = 10 
 
     keys = pygame.key.get_pressed()
@@ -157,7 +164,7 @@ while carryOn:
 
     #change this variable to get it less often
         # nuh
-    if ball.rect.y > 390 and ball.rect.y < 400 and ball.velocity[1] > 0:
+    if ball.rect.y > 440 and ball.rect.y < 450 and ball.velocity[1] > 0:
 
         ballXTrain = ball.rect.x
         velocityTrain = ball.velocity[0]
@@ -166,9 +173,14 @@ while carryOn:
         # print(f"Ball angle: {angle:.2f}°", flush=True)
 
         # code of instant pain and suffering
-        yhat = rfr.predict([[ball.rect.x, ball.velocity[0], angle]])
+        yhat = mlr.predict([[ball.rect.x, ball.velocity[0], ball.velocity[1], angle]])
+        if yhat[0] < 0:
+            paddle.rect.x = 0
+        if yhat[0] > 700:
+            paddle.rect.x = 700
+        else:
+            paddle.rect.x = yhat[0]
 
-        paddle.rect.x = yhat[0]
         # model.predict(nyaa)
         # model.predict(nyaa)
         # model.predict(nyaa)
@@ -177,7 +189,10 @@ while carryOn:
     if ball.rect.x<=0:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.y>590:
-        ball.velocity[1] = -ball.velocity[1]
+        # ball.velocity[1] = -ball.velocity[1]
+        ball.rect.x=400
+        ball.rect.y=300
+        time.sleep(1)
         lives -= 1
         if lives == 0:
             font = pygame.font.Font(None, 74)
@@ -192,12 +207,11 @@ while carryOn:
     if pygame.sprite.collide_rect(ball, paddle):
         ball.rect.bottom = paddle.rect.top
         ball.bounce()
-
-        train_data = {"ballX": [ballXTrain], "velocity": [velocityTrain], "angle": [angle], "paddleX": [paddle.rect.x]}
+        train_data = {"ballX": [ballXTrain], "velocityX": [ball.velocity[0]], "velocityY": [ball.velocity[1]], "angle": [angle], "paddleX": [paddle.rect.x]}
         train_df = pd.DataFrame(train_data)
         train_df.to_csv("training.csv", mode='a', header=False, index=False)
-        print(f"Paddle position: ({paddle.rect.x})", flush=True)
-
+        
+    
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
       ball.bounce()
@@ -221,7 +235,6 @@ while carryOn:
     screen.blit(text, (20,10))
     text = font.render("Lives: " + str(lives), 1, WHITE)
     screen.blit(text, (650,10))
-
 
     all_sprites_list.draw(screen)
     pygame.display.flip()
