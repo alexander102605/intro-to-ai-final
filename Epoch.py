@@ -10,4 +10,4 @@ def train(n = 1, fileName = "BreakoutAI.py"):
        print(f"EPOCH {i}/{n}")
 
 
-train(n=10)
+train(n=1000)

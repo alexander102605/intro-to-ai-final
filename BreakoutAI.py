@@ -8,21 +8,17 @@ import math
 import warnings
 import time
 import numpy as np
-import copy
 warnings.filterwarnings('ignore', category=UserWarning)
 df = pd.read_csv("./training.csv")
 
 
 x_train = df[["ballX","velocityX", "velocityY", "angle"]]
 y_train = df["paddleX"]
-# rfr = RandomForestRegressor(criterion="absolute_error", max_depth=30, n_estimators=100)
-# rfr.fit(x_train, y_train)
-
 
 
 mlr = LinearRegression()
 mlr.fit(x_train, y_train)
-# i love random forest regression <3<3,3<3<3<3<3
+# mlr my beloved <3
 
 ballXTrain = 0
 velocityTrain=0
@@ -181,6 +177,8 @@ while carryOn:
         else:
             paddle.rect.x = yhat[0]
 
+        # model.predict(nyaa)
+        # model.predict(nyaa)
         # model.predict(nyaa)
         # model.predict(nyaa)
         # model.predict(nyaa)
