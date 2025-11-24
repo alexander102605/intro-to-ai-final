@@ -1,7 +1,7 @@
 import pygame
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import recall_score, f1_score, accuracy_score
+from sklearn.metrics import mean_absolute_error, r2_score
 from random import randint
 import pandas as pd
 import math
@@ -12,12 +12,16 @@ warnings.filterwarnings('ignore', category=UserWarning)
 df = pd.read_csv("./training.csv")
 
 
-x_train = df[["ballX","velocityX", "velocityY", "angle"]]
-y_train = df["paddleX"]
+X = df[["ballX","velocityX", "velocityY", "angle"]]
+y = df["paddleX"]
 
+x_train = X.iloc[:len(X)//2]
+y_train = y.iloc[:len(y)//2]
+x_test = X.iloc[len(X)//2:]
+y_true = y.iloc[len(y)//2:]
 
 mlr = LinearRegression()
-mlr.fit(x_train, y_train)
+mlr.fit(X, y)
 # mlr my beloved <3
 
 ballXTrain = 0
@@ -240,3 +244,11 @@ while carryOn:
 
 
 pygame.quit()
+
+y_pred = mlr.predict(x_test)
+
+mae = mean_absolute_error(y_true, y_pred)
+r2 = r2_score(y_true, y_pred)
+
+print("Mean Absolute Error: ", round(mae,3))
+print("R2 Score: ", round(r2,3))
