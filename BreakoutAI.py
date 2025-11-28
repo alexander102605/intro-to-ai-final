@@ -171,9 +171,9 @@ while carryOn:
         magnitude = (ball.velocity[0]**2 + ball.velocity[1]**2)**0.5
         angle = math.degrees(math.atan2(ball.velocity[1], ball.velocity[0]))
         # print(f"Ball angle: {angle:.2f}°", flush=True)
-
         # code of instant pain and suffering
         yhat = mlr.predict([[ball.rect.x, ball.velocity[0], ball.velocity[1], angle]])
+        
         if yhat[0] < 0:
             paddle.rect.x = 0
         if yhat[0] > 700:
