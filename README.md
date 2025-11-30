@@ -6,3 +6,6 @@ Dependencies:
   pygame
   numpy
   pandas
+
+How to run: 
+Download dependencies, then run the Breakout AI file. 
